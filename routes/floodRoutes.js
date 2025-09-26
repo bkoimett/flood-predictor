@@ -10,7 +10,7 @@ router.get("/flood/fetch", async (req, res) => {
     const {
       lat = -0.0917,
       lon = 34.768,
-      start = "20250920",
+      start = "20250825",
       end = "20250925",
       area = "Kisumu",
     } = req.query;
@@ -54,9 +54,10 @@ router.post("/flood", async (req, res) => {
   }
 });
 
-// Get by area
+// GET by area end point
 router.get('/flood', async(req,res) => {
     try{
+        // destructuring assignment
         const { area } = req.query
         let query = {};
         if (area) query.area = area;
