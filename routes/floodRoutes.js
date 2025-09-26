@@ -19,24 +19,27 @@ router.get("/flood/fetch", async (req, res) => {
     const url = `https://power.larc.nasa.gov/api/temporal/daily/point?parameters=PRECTOTCORR&community=RE&longitude=${lon}&latitude=${lat}&start=${start}&end=${end}&format=JSON`;
 
     // GET request to NASA API using Axios
-    const response = await axios.get(url)
+    const response = await axios.get(url);
 
     // extracts just the rainfall data
     const rainfallData = response.data.properties.parameter.PRECTOTCORR;
 
     // convert nasa json into mongoDB docs
     const docs = Object.entries(rainfallData).map(([date, rainfall]) => ({
-        date,
-        rainfall_mm: rainfall,
-        river_level_m: (rainfall/20).toFixed(2),
-        area
+      date: new Date(
+        date.substring(0, 4), // year
+        date.substring(4, 6) - 1, // month (0-based in JS)
+        date.substring(6, 8) // day
+      ),
+      rainfall_mm: rainfall,
+      river_level_m: (rainfall / 20).toFixed(2),
+      area,
     }));
 
     // insert into mongoDB
     await FloodData.insertMany(docs);
 
-    res.json({ message: 'Data saved ✅', count: docs.length, docs});
-
+    res.json({ message: "Data saved ✅", count: docs.length, docs });
   } catch (err) {
     console.error(err);
     res.status(400).json(err);
@@ -55,19 +58,18 @@ router.post("/flood", async (req, res) => {
 });
 
 // GET by area end point
-router.get('/flood', async(req,res) => {
-    try{
-        // destructuring assignment
-        const { area } = req.query
-        let query = {};
-        if (area) query.area = area;
+router.get("/flood", async (req, res) => {
+  try {
+    // destructuring assignment
+    const { area } = req.query;
+    let query = {};
+    if (area) query.area = area;
 
-        const data = await FloodData.find(query).sort({ date: -1});
-        res.json(data);
-    }
-    catch (err) {
-        res.status(400).json({ error: err.message})
-    }
+    const data = await FloodData.find(query).sort({ date: -1 });
+    res.json(data);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
 // Get all data
