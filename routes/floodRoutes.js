@@ -10,7 +10,7 @@ router.get("/flood/fetch", async (req, res) => {
     const {
       lat = -0.0917,
       lon = 34.768,
-      start = "20250825",
+      start = "20250825", // why are the extreme dates not being retrieved?
       end = "20250925",
       area = "Kisumu",
     } = req.query;
@@ -95,6 +95,19 @@ router.get("/flood/predict", async (req, res) => {
   if (rainfall_mm > 100 || river_level_m > 4.5) risk = "High ⚠️";
 
   res.json({ prediction: risk, latest: latest[0], area: latest[0].area });
+});
+
+
+// DELETE - Remove everything
+router.delete('/flood', async (req,res) => {
+    try{
+        await FloodData.find().deleteMany();
+        const floodData = await FloodData.find();
+        res.status(200).json(floodData);
+    }
+    catch (err) {
+        res.status(400).json({ error: err.message});
+    }
 });
 
 // export router
