@@ -35,7 +35,7 @@ router.get("/flood/predict", async (req, res) => {
     if ( rainfall_mm > 100 || river_level_m > 3.0) risk = 'Moderate 👌';
     if ( rainfall_mm > 100 || river_level_m > 4.5) risk = 'High ⚠️';
 
-    res.json({ prediction: risk, latest: latest[0] });
+    res.json({ prediction: risk, latest: latest[0], area: latest[0].area });
 });
 
 // export router
