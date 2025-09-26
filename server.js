@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 
 require("dotenv").config(); // automatically loads environment variables from a .env file
 
+const floodRoutes = require('./routes/floodRoutes')
+
 // initialise app
 const app = express();
 
@@ -19,6 +21,8 @@ mongoose
 app.get('/', (req, res) => {
     res.send('Flood Prediction API is running 🚀')
 });
+
+app.use(floodRoutes);
 
 // start server
 const PORT = process.env.PORT || 5000
